@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict App UI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #5b21b6;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .section {
+            margin-bottom: 28px;
+        }
+
+        .section-title {
+            color: #374151;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title::before {
+            content: "";
+            width: 4px;
+            height: 18px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .dataset-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .dataset-btn {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dataset-btn:hover {
+            border-color: #c4b5fd;
+            transform: translateY(-2px);
+        }
+
+        .dataset-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .model-options {
+            display: flex;
+            gap: 16px;
+        }
+
+        .radio-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .radio-wrapper input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .radio-label {
+            display: block;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            background: white;
+            color: #6b7280;
+            font-weight: 500;
+            font-size: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-wrapper input[type="radio"]:checked + .radio-label {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .feature-input-group {
+            margin-bottom: 16px;
+        }
+
+        .feature-label {
+            display: block;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .feature-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: "Poppins", sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .feature-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .feature-input.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .error {
+            padding: 14px 16px;
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border-left: 4px solid #dc2626;
+            border-radius: 12px;
+            color: #991b1b;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            animation: slideDown 0.3s ease;
+        }
+
+        .success {
+            padding: 14px 16px;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-left: 4px solid #10b981;
+            border-radius: 12px;
+            color: #065f46;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: "Poppins", sans-serif;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-reset:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-reset:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .dataset-buttons,
+            .model-options,
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔮 PredictApp</h1>
+            <p>Pilih dataset → Pilih model → Isi fitur → Kirim</p>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Dataset</div>
+            <div class="dataset-buttons">
+                <button id="btn-wine" class="dataset-btn active">Wine Quality</button>
+                <button id="btn-cancer" class="dataset-btn">Breast Cancer</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">Model</div>
+            <div class="model-options">
+                <div class="radio-wrapper">
+                    <input type="radio" name="model" value="nb" id="model-nb" checked>
+                    <label for="model-nb" class="radio-label">Naive Bayes</label>
+                </div>
+                <div class="radio-wrapper">
+                    <input type="radio" name="model" value="id3" id="model-id3">
+                    <label for="model-id3" class="radio-label">ID3</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title" id="feature-title">Fitur (wine)</div>
+            <form id="feature-form"></form>
+        </div>
+
+        <div id="error-box"></div>
+
+        <div class="action-buttons">
+            <button id="submit" class="btn btn-submit">Kirim Prediksi</button>
+            <button id="reset" class="btn btn-reset">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        const schemas = {
+            wine: [
+                { key: "fixed_acidity", label: "Fixed Acidity", step: "0.1" },
+                { key: "volatile_acidity", label: "Volatile Acidity", step: "0.01" },
+                { key: "citric_acid", label: "Citric Acid", step: "0.01" },
+                { key: "residual_sugar", label: "Residual Sugar", step: "0.1" },
+                { key: "chlorides", label: "Chlorides", step: "0.001" },
+                { key: "free_sulfur_dioxide", label: "Free Sulfur Dioxide", step: "1" },
+                { key: "total_sulfur_dioxide", label: "Total Sulfur Dioxide", step: "1" },
+                { key: "density", label: "Density", step: "0.0001" },
+                { key: "pH", label: "pH", step: "0.01" },
+                { key: "sulphates", label: "Sulphates", step: "0.01" },
+                { key: "alcohol", label: "Alcohol", step: "0.1" }
+            ],
+            cancer: [
+                { key: "radius_mean", label: "Radius Mean", step: "0.01" },
+                { key: "texture_mean", label: "Texture Mean", step: "0.01" },
+                { key: "perimeter_mean", label: "Perimeter Mean", step: "0.01" },
+                { key: "area_mean", label: "Area Mean", step: "0.1" },
+                { key: "smoothness_mean", label: "Smoothness Mean", step: "0.0001" },
+                { key: "compactness_mean", label: "Compactness Mean", step: "0.0001" },
+                { key: "concavity_mean", label: "Concavity Mean", step: "0.0001" },
+                { key: "concave_points_mean", label: "Concave Points Mean", step: "0.0001" },
+                { key: "symmetry_mean", label: "Symmetry Mean", step: "0.0001" },
+                { key: "fractal_dimension_mean", label: "Fractal Dimension Mean", step: "0.0001" },
+                { key: "radius_se", label: "Radius SE", step: "0.001" },
+                { key: "texture_se", label: "Texture SE", step: "0.001" },
+                { key: "perimeter_se", label: "Perimeter SE", step: "0.01" },
+                { key: "area_se", label: "Area SE", step: "0.1" },
+                { key: "smoothness_se", label: "Smoothness SE", step: "0.00001" },
+                { key: "compactness_se", label: "Compactness SE", step: "0.0001" },
+                { key: "concavity_se", label: "Concavity SE", step: "0.0001" },
+                { key: "concave_points_se", label: "Concave Points SE", step: "0.00001" },
+                { key: "symmetry_se", label: "Symmetry SE", step: "0.00001" },
+                { key: "fractal_dimension_se", label: "Fractal Dimension SE", step: "0.000001" },
+                { key: "radius_worst", label: "Radius Worst", step: "0.01" },
+                { key: "texture_worst", label: "Texture Worst", step: "0.01" },
+                { key: "perimeter_worst", label: "Perimeter Worst", step: "0.01" },
+                { key: "area_worst", label: "Area Worst", step: "0.1" },
+                { key: "smoothness_worst", label: "Smoothness Worst", step: "0.0001" },
+                { key: "compactness_worst", label: "Compactness Worst", step: "0.0001" },
+                { key: "concavity_worst", label: "Concavity Worst", step: "0.0001" },
+                { key: "concave_points_worst", label: "Concave Points Worst", step: "0.0001" },
+                { key: "symmetry_worst", label: "Symmetry Worst", step: "0.0001" },
+                { key: "fractal_dimension_worst", label: "Fractal Dimension Worst", step: "0.0001" }
+            ]
+        };
+
+        let dataset = "wine";
+        let model = "nb";
+        let features = {};
+
+        const featureForm = document.getElementById("feature-form");
+        const errorBox = document.getElementById("error-box");
+
+        function setupCancerValidation() {
+            const cancerInputs = document.querySelectorAll('.feature-input');
+            
+            cancerInputs.forEach(input => {
+                
+                input.addEventListener('input', function(e) {
+                    let value = e.target.value;
+                    
+                    value = value.replace(',', '.');
+                    
+                    value = value.replace(/[^\d.-]/g, '');
+                    
+                    e.target.value = value;
+                });
+                
+
+                input.addEventListener('blur', function(e) {
+                    const value = e.target.value;
+                    if (value && isNaN(parseFloat(value))) {
+                        e.target.classList.add('error');
+                    } else {
+                        e.target.classList.remove('error');
+                    }
+                });
+            });
+        }
+
+        function renderFeatures() {
+            featureForm.innerHTML = "";
+            features = {};
+
+            schemas[dataset].forEach(f => {
+                features[f.key] = "";
+                featureForm.innerHTML += `
+                    <div class="feature-input-group">
+                        <label class="feature-label">${f.label}</label>
+                        <input type="text" id="${f.key}" class="feature-input" 
+                               placeholder="masukkan data sesuai contoh berikut: 0.1234" 
+                               inputmode="decimal">
+                    </div>
+                `;
+            });
+
+            document.getElementById("feature-title").innerHTML = `Fitur (${dataset})`;
+            
+            if (dataset === "cancer") {
+                setTimeout(setupCancerValidation, 100);
+            }
+        }
+        renderFeatures();
+
+        document.getElementById("btn-wine").onclick = () => {
+            dataset = "wine";
+            setActive();
+            renderFeatures();
+            errorBox.innerHTML = "";
+        };
+        document.getElementById("btn-cancer").onclick = () => {
+            dataset = "cancer";
+            setActive();
+            renderFeatures();
+            errorBox.innerHTML = "";
+        };
+
+        function setActive() {
+            document.getElementById("btn-wine").classList.toggle("active", dataset === "wine");
+            document.getElementById("btn-cancer").classList.toggle("active", dataset === "cancer");
+        }
+
+        document.querySelectorAll("input[name='model']").forEach(r => {
+            r.onchange = () => {
+                model = r.value;
+            };
+        });
+
+        document.getElementById("submit").onclick = async () => {
+            errorBox.innerHTML = "";
+
+           
+            for (const f of schemas[dataset]) {
+                const value = document.getElementById(f.key).value.trim();
+                if (value === "") {
+                    errorBox.innerHTML = `<div class="error">⚠️ Field "${f.label}" harus diisi.</div>`;
+                    document.getElementById(f.key).classList.add('error');
+                    return;
+                } else {
+                    document.getElementById(f.key).classList.remove('error');
+                }
+            }
+
+        
+            if (dataset === "cancer") {
+                for (const f of schemas[dataset]) {
+                    const input = document.getElementById(f.key);
+                    let value = input.value.replace(',', '.');
+                    
+                    if (isNaN(parseFloat(value))) {
+                        errorBox.innerHTML = `<div class="error">⚠️ Format angka tidak valid untuk "${f.label}". Gunakan titik (.) untuk desimal.</div>`;
+                        input.classList.add('error');
+                        return;
+                    } else {
+                        input.classList.remove('error');
+                    }
+                }
+            }
+
+            const featureArray = schemas[dataset].map(f => {
+                let value = document.getElementById(f.key).value;
+    
+                value = value.replace(',', '.');
+                const numValue = Number(value);
+                
+
+                if (isNaN(numValue)) {
+                    throw new Error(`Invalid number for ${f.label}`);
+                }
+                return numValue;
+            });
+
+            let endpoint = "";
+            if (dataset === "wine" && model === "nb") endpoint = "/api/predict/wine/nb";
+            if (dataset === "wine" && model === "id3") endpoint = "/api/predict/wine/id3";
+            if (dataset === "cancer" && model === "nb") endpoint = "/api/predict/cancer/nb";
+            if (dataset === "cancer" && model === "id3") endpoint = "/api/predict/cancer/id3";
+
+            const payload = { features: featureArray };
+
+            try {
+
+                const submitBtn = document.getElementById("submit");
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = "Memproses...";
+                submitBtn.disabled = true;
+
+                const res = await fetch(endpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+                
+                if (res.ok) {
+                    localStorage.setItem('lastPrediction', data.prediction);
+                    localStorage.setItem('lastPredictionType', data.type);
+                    localStorage.setItem('lastDataset', dataset);
+                    localStorage.setItem('lastModel', model);
+                    localStorage.setItem('lastMessage', data.message);
+                    
+                    window.location.href = '/result';
+                } else {
+                    errorBox.innerHTML = `<div class="error">❌ Error: ${data.error}</div>`;
+                }
+
+            } catch (err) {
+                const submitBtn = document.getElementById("submit");
+                submitBtn.textContent = "Kirim Prediksi";
+                submitBtn.disabled = false;
+                
+                errorBox.innerHTML = `<div class="error">❌ Network error: ${err.message}</div>`;
+            }
+        };
+
+        document.getElementById("reset").onclick = () => {
+            renderFeatures();
+            errorBox.innerHTML = "";
+        };
+    </script>
+</body>
+</html>

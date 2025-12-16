@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Prediksi - PredictApp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            color: #5b21b6;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .prediction-card {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin: 25px 0;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .prediction-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .prediction-value {
+            font-size: 48px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .prediction-message {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .prediction-card.malignant {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+        }
+
+        .prediction-card.benign {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .details {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .detail-label {
+            color: #6b7280;
+            flex: 1;
+        }
+
+        .detail-value {
+            color: #374151;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: "Poppins", sans-serif;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">🎯</div>
+        <h1 class="title">Prediksi Berhasil!</h1>
+        <p class="subtitle">Hasil analisis model machine learning</p>
+        
+        <div id="prediction-result">
+            
+        </div>
+
+        <div class="details">
+            <div class="detail-item">
+                <span class="detail-label">Dataset:</span>
+                <span class="detail-value" id="dataset-name">-</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Model:</span>
+                <span class="detail-value" id="model-name">-</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Waktu:</span>
+                <span class="detail-value" id="timestamp">-</span>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/" class="btn btn-primary">Prediksi Lagi</a>
+            <button onclick="shareResult()" class="btn btn-secondary">Share Hasil</button>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const predictionData = {
+            prediction: urlParams.get('prediction') || localStorage.getItem('lastPrediction'),
+            type: urlParams.get('type') || localStorage.getItem('lastPredictionType'),
+            dataset: urlParams.get('dataset') || localStorage.getItem('lastDataset'),
+            model: urlParams.get('model') || localStorage.getItem('lastModel'),
+            message: urlParams.get('message') || localStorage.getItem('lastMessage')
+        };
+
+        function displayPrediction() {
+            const resultDiv = document.getElementById('prediction-result');
+            const datasetSpan = document.getElementById('dataset-name');
+            const modelSpan = document.getElementById('model-name');
+            const timestampSpan = document.getElementById('timestamp');
+
+            datasetSpan.textContent = predictionData.dataset === 'wine' ? 'Wine Quality' : 'Breast Cancer';
+            modelSpan.textContent = predictionData.model === 'nb' ? 'Naive Bayes' : 'Decision Tree (ID3)';
+            timestampSpan.textContent = new Date().toLocaleString();
+
+            if (predictionData.type === 'quality') {
+             
+                const quality = parseInt(predictionData.prediction);
+                const qualityColor = quality >= 7 ? '🟢' : quality >= 5 ? '🟡' : '🔴';
+                
+                resultDiv.innerHTML = `
+                    <div class="prediction-card">
+                        <div class="prediction-label">WINE QUALITY RATING</div>
+                        <div class="prediction-value">${quality}</div>
+                        <div class="prediction-message">
+                            ${qualityColor} ${getWineQualityMessage(quality)}
+                        </div>
+                    </div>
+                `;
+            } else {
+            
+                const isMalignant = parseInt(predictionData.prediction) === 1;
+                
+                resultDiv.innerHTML = `
+                    <div class="prediction-card ${isMalignant ? 'malignant' : 'benign'}">
+                        <div class="prediction-label">DIAGNOSIS RESULT</div>
+                        <div class="prediction-value">${isMalignant ? '⚠️' : '✅'}</div>
+                        <div class="prediction-message">
+                            ${isMalignant ? 'MALIGNANT (GANAS)' : 'BENIGN (JINAK)'}
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function getWineQualityMessage(quality) {
+            if (quality >= 8) return 'Excellent Quality! 🏆';
+            if (quality >= 6) return 'Good Quality 👍';
+            if (quality >= 5) return 'Average Quality ➖';
+            return 'Needs Improvement 👎';
+        }
+
+        function shareResult() {
+            const text = `Hasil Prediksi: ${predictionData.message}`;
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Hasil Prediksi ML',
+                    text: text,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(text);
+                alert('Hasil disalin ke clipboard! 📋');
+            }
+        }
+
+        
+        displayPrediction();
+    </script>
+</body>
+</html>
